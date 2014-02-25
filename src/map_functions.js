@@ -25,16 +25,21 @@ function parsemap (mapArray, edges) {
 			switch (mapArray[y][x]) {
 				case 'f':
 					newEntity = Crafty.e('Floor').at(x,y);
-					occupiedSquares[y][x] = {type: 'Floor', id: newEntity[0]};
-					// allObjects.push(occupiedSquares[y][x]);
-					// addVoid(newEntity, edges, x, y);
+					occupiedSquares[y][x] = newEntity;
+				break;
+				case 'b':
+					newEntity = Crafty.e('Button').at(x,y);
+					occupiedSquares[y][x] = newEntity;
 				break;
 				case '@':
 					if (Crafty('Player').length === 0) {
 						Game.player = Crafty.e('Player, WhiteCharacter').at(x,y);
+						Game.player.h = Game.map_grid.tile.height * 2;
+						occupiedSquares[y][x] = false;
 					}
 				break;
 				default:
+					occupiedSquares[y][x] = false;
 				break;
 			}
 		}
@@ -72,7 +77,6 @@ function changeMap (direction) {
 	switch (direction) {
 		case 'UP':
 				currentMap.x -= 1;
-				console.log(currentMap);
 				Crafty.scene('DesertZone');
 				Game.player.y = Game.player.y = Game.height() - Game.map_grid.tile.height;
 			break;

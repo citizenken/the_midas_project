@@ -22,16 +22,24 @@ Crafty.c('Gate', {
 });
 
 Crafty.c('Floor', {
+	_maxGold: 15,
+	_targetGold: 10,
+	_currentGold: 0,
 	init: function() {
 	this.requires('Actor, Solid, Collision, Color')
 	  .color('blue');
 	},
 });
 
-Crafty.c('Tent', {
+Crafty.c('Button', {
+	_maxGold: 15,
+	_targetGold: 10,
+	_currentGold: 0,
 	init: function() {
-	this.requires('Scenery, Color')
-	  .color('black');
+	this.requires('Scenery, Color, InterActive')
+	  .color('red');
+	  this.h = 5;
+	  this.w = 5;
 	},
 });
 

@@ -21,7 +21,6 @@ Crafty.c('Player', {
 		this.requires('Actor, Twoway, Collision, WiredHitBox, Delay, Persist, Solid, Color, Gravity')
 			.color('black')
 			.gravity('Floor')
-			.attr({w:64, h:64})
 			.gravityConst(0.6)
 			// ._playerHUD = Crafty.e('HUD');
 			// this.attach(this._playerHUD);
@@ -30,7 +29,6 @@ Crafty.c('Player', {
 				this.checkDead();
 				// this.updateHUD();
 			})
-			._adjacent = this.checkAdjacent();
 			this.bind('KeyDown', function(e) {
 				switch (e.key) {
 					case Crafty.keys.DOWN_ARROW:
@@ -43,6 +41,9 @@ Crafty.c('Player', {
 						break;
 					case Crafty.keys.E:
 						Game.playerKeys.E = true;
+						if (Game.playerKeys.DOWN_ARROW) {
+							this.turnGold(this._adjacent.down)
+						}
 						break;
 					case Crafty.keys.SPACE:
 						Game.playerKeys.SPACE = true;
@@ -111,11 +112,6 @@ Crafty.c('Player', {
 						break;
 				}
 			})
-			.onHit('SandDune', function(data) {
-				if (this._speed.x == this._moveSpeed || this._speed.y == this._moveSpeed) {
-					this.fourway(this._moveSpeed/2);
-				}
-			})
 			.onHit('Actor', function(data) {
 				var hitObject = data[0].obj;
 				var hitObjectType;
@@ -123,13 +119,19 @@ Crafty.c('Player', {
 					hitObjectType = 'Void';
 				} else if (hitObject.has('Floor')) {
 					hitObjectType = 'Floor';
+				} else if (hitObject.has('Button')) {
+					hitObjectType = 'Button';
 				}
 				this.collisionHandler(hitObjectType, hitObject);
+			})
+			.bind('Gilding', function() {
+				console.log(this.hit('InterActive'))
 			})
 			.bind('Moved', function(data) {
 				this._previousLocation = data;
 				this._currentLocation = {x:this.x, y:this.y};
 				this._nextLocation = {x:this.x + this._movement.x, y:this.y + this._movement.y};
+				this._adjacent = this.checkAdjacent();
 			})
 			.bind('NewDirection', function(data) {
 				if (data.y === -1 || data === 'UP') {
@@ -187,15 +189,12 @@ Crafty.c('Player', {
 				if (this._movement.y !== (this._moveSpeed * -1)) {
 				  this.y -= this._movement.y;
 				}
-				if (Game.playerKeys.E) {
-					this.turnGold(hitObject);
-				}
 			break;
-			case 'Camel':
-				if (Game.playerKeys.M) {
-					this.mount(data);
-				}
-			break;
+			// case 'Button':
+			// 	if (Game.playerKeys.E) {
+			// 		this.turnGold(hitObject);
+			// 	}
+			// break;
 			case 'TradeItem':
 			// console.log(this._tradeItems.length);
 				if (this._tradeItems.length < 3) {
@@ -212,23 +211,52 @@ Crafty.c('Player', {
 
 	checkAdjacent: function() {
 		var currentSquare = {x:Math.floor(this.at().x), y:Math.floor(this.at().y)};
-		console.log(Game.currentMap.occupiedSquares)
+		var squareUp, squareDown, squareRight, squareLeft;
 		if (Game.currentMap.occupiedSquares[currentSquare.y - 1][currentSquare.x]) {
-			var squareUp = Game.currentMap.occupiedSquares[currentSquare.y - 1][currentSquare.x].type;
+			squareUp = Game.currentMap.occupiedSquares[currentSquare.y - 1][currentSquare.x].type;
+		} else {
+			squareUp = 'empty';
 		}
-		if (Game.currentMap.occupiedSquares[currentSquare.y + 1][currentSquare.x]) {
-			var squareDown = Game.currentMap.occupiedSquares[currentSquare.y + 1][currentSquare.x];
+
+		if (Game.currentMap.occupiedSquares[currentSquare.y + (this.h/Game.map_grid.tile.height)][currentSquare.x]) {
+			squareDown = Game.currentMap.occupiedSquares[currentSquare.y + (this.h/Game.map_grid.tile.height)][currentSquare.x];
+		} else {
+			squareDown = 'empty';
 		}
+
 		if (Game.currentMap.occupiedSquares[currentSquare.y][currentSquare.x + 1]) {
-			var squareRight = Game.currentMap.occupiedSquares[currentSquare.y + 1][currentSquare.x];
+			squareRight = Game.currentMap.occupiedSquares[currentSquare.y + 1][currentSquare.x];
+		} else {
+			squareRight = 'empty';
 		}
+
 		if (Game.currentMap.occupiedSquares[currentSquare.y][currentSquare.x - 1]) {
-			var squareLeft = Game.currentMap.occupiedSquares[currentSquare.y + 1][currentSquare.x];
+			squareLeft = Game.currentMap.occupiedSquares[currentSquare.y + 1][currentSquare.x];
+		} else {
+			squareLeft = 'empty';
 		}
-		return [squareUp, squareDown, squareRight, squareLeft]
+		return {up:squareUp, down:squareDown, right:squareRight, left:squareLeft};
 	},
 
 	turnGold: function (hitObject) {
-		hitObject.color('yellow');
+		var mg = hitObject._maxGold;
+		var tg = hitObject._targetGold;
+		var cg = hitObject._currentGold;
+		console.log('test');
+		while (Game.playerKeys.E && cg <= mg) {
+
+			this.delay(function(){
+				if (cg === tg) {
+					hitObject.color('yellow');
+				} else if (cg < mg) {
+					cg++;
+				} else if (cg >= mg) {
+					hitObject.destroy();
+				}
+			}, 1000)
+		}
+	},
+
+	gilding: function(hitObject) {
 	}
 });
