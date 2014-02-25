@@ -2,10 +2,11 @@ Crafty.c('Player', {
 	_activeItem: 'Sword',
 	_currentLocation: null,
 	_currentZone: {x:null, y:null},
-	_direction: 'DOWN',
+	_direction: '',
 	_followers: [1,1,1,1,1,1,1,1],
 	_hitPoints: 30,
-	_items: ['Sword', 'Sling', 'Lance', 'EmptyWaterBag'],
+	_goldLevel: 5,
+	_items: [],
 	_jumpSpeed: 4,
 	_justTriggeredScene: false,
 	_money: 000000000000,
@@ -16,10 +17,11 @@ Crafty.c('Player', {
 	_water: 30,
 	_tradeItems: [],
 	init: function() {
-		this.requires('Actor, Twoway, Collision, Delay, Persist, Solid, Color, Gravity')
+		this.requires('Actor, Twoway, Collision, WireBox, Delay, Persist, Solid, Color, Gravity')
 			.color('black')
 			.gravity('Floor')
-			// .gravityConst(0.2)
+			.attr({h:64})
+			.gravityConst(0.22)
 			// ._playerHUD = Crafty.e('HUD');
 			// this.attach(this._playerHUD);
 			.twoway(this._moveSpeed, this._jumpSpeed)
@@ -29,21 +31,21 @@ Crafty.c('Player', {
 			})
 			.bind('KeyDown', function(e) {
 				switch (e.key) {
-					case Crafty.keys.UP_ARROW:
-						Game.playerKeys.UP_ARROW = true;
+					case Crafty.keys.DOWN_ARROW:
+						Game.playerKeys.DOWN_ARROW = true;
+						this.y += this.h/2;
+						this.h = this.h/2;
 						break;
 					case Crafty.keys.RIGHT_ARROW:
 						Game.playerKeys.RIGHT_ARROW = true;
-						break;							
-					case Crafty.keys.R:
-						this.fourway(this._moveSpeed * 4);
+						break;
+					case Crafty.keys.E:
+						Game.playerKeys.E = true;
+						this.turnGold();
 						break;
 					case Crafty.keys.SPACE:
 						Game.playerKeys.SPACE = true;
 						this.itemRouter();
-						break;
-					case Crafty.keys.E:
-						Game.playerKeys.E = true;
 						break;
 					case Crafty.keys.Y:
 						Game.playerKeys.Y = true;
@@ -89,12 +91,17 @@ Crafty.c('Player', {
 			.bind('KeyUp', function(e) {
 				switch (e.key)
 				{
+					case Crafty.keys.DOWN_ARROW:
+						Game.playerKeys.DOWN_ARROW = true;
+						this.h = this.h * 2;
+						this.y -= this.h/2;
+						break;
 					case Crafty.keys.UP_ARROW:
 						Game.playerKeys.UP_ARROW = false;
 						break;
 					case Crafty.keys.RIGHT_ARROW:
 						Game.playerKeys.RIGHT_ARROW = false;
-						break;							
+						break;
 					case Crafty.keys.R:
 						this.fourway(1);
 						break;
@@ -117,7 +124,7 @@ Crafty.c('Player', {
 				if (hitObject.has('Void')) {
 					hitObjectType = 'Void';
 				} else if (hitObject.has('Floor')) {
-					hitObjectType = 'Floor';                    
+					hitObjectType = 'Floor';
 				}
 				this.collisionHandler(hitObjectType, hitObject);
 			})
@@ -175,6 +182,7 @@ Crafty.c('Player', {
 				}
 			break;
 			case 'Floor':
+			console.log('test')
 				this._speed = 0;
 				if (this._movement) {
 				  this.x -= this._movement.x;
@@ -218,4 +226,9 @@ Crafty.c('Player', {
 		}
 		return [squareUp, squareDown, squareRight, squareLeft]
 	},
+
+	turnGold: function (hitObject) {
+		hitObject.color('yellow');
+		console.log(hitObject);
+	}
 });
