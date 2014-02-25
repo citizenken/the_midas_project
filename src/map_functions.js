@@ -26,7 +26,7 @@ function parsemap (mapArray, edges) {
 				case 'f':
 					newEntity = Crafty.e('Floor').at(x,y);
 					occupiedSquares[y][x] = {type: 'Floor', id: newEntity[0]};
-					allObjects.push(occupiedSquares[y][x]);
+					// allObjects.push(occupiedSquares[y][x]);
 					// addVoid(newEntity, edges, x, y);
 				break;
 				case '@':
@@ -39,7 +39,6 @@ function parsemap (mapArray, edges) {
 			}
 		}
 	}
-	// console.log(occupiedSquares);
 	Game.currentMap.map = mapArray;
 	Game.currentMap.occupiedSquares = occupiedSquares;
 	Game.allObjects = allObjects;

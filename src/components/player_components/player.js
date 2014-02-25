@@ -1,5 +1,6 @@
 Crafty.c('Player', {
 	_activeItem: 'Sword',
+	_adjacent: null,
 	_currentLocation: null,
 	_currentZone: {x:null, y:null},
 	_direction: '',
@@ -7,7 +8,7 @@ Crafty.c('Player', {
 	_hitPoints: 30,
 	_goldLevel: 5,
 	_items: [],
-	_jumpSpeed: 4,
+	_jumpSpeed: 8,
 	_justTriggeredScene: false,
 	_money: 000000000000,
 	_moveSpeed: 4,
@@ -17,11 +18,11 @@ Crafty.c('Player', {
 	_water: 30,
 	_tradeItems: [],
 	init: function() {
-		this.requires('Actor, Twoway, Collision, WireBox, Delay, Persist, Solid, Color, Gravity')
+		this.requires('Actor, Twoway, Collision, WiredHitBox, Delay, Persist, Solid, Color, Gravity')
 			.color('black')
 			.gravity('Floor')
-			.attr({h:64})
-			.gravityConst(0.22)
+			.attr({w:64, h:64})
+			.gravityConst(0.6)
 			// ._playerHUD = Crafty.e('HUD');
 			// this.attach(this._playerHUD);
 			.twoway(this._moveSpeed, this._jumpSpeed)
@@ -29,7 +30,8 @@ Crafty.c('Player', {
 				this.checkDead();
 				// this.updateHUD();
 			})
-			.bind('KeyDown', function(e) {
+			._adjacent = this.checkAdjacent();
+			this.bind('KeyDown', function(e) {
 				switch (e.key) {
 					case Crafty.keys.DOWN_ARROW:
 						Game.playerKeys.DOWN_ARROW = true;
@@ -41,7 +43,6 @@ Crafty.c('Player', {
 						break;
 					case Crafty.keys.E:
 						Game.playerKeys.E = true;
-						this.turnGold();
 						break;
 					case Crafty.keys.SPACE:
 						Game.playerKeys.SPACE = true;
@@ -101,9 +102,6 @@ Crafty.c('Player', {
 						break;
 					case Crafty.keys.RIGHT_ARROW:
 						Game.playerKeys.RIGHT_ARROW = false;
-						break;
-					case Crafty.keys.R:
-						this.fourway(1);
 						break;
 					case Crafty.keys.E:
 						Game.playerKeys.E = false;
@@ -182,13 +180,15 @@ Crafty.c('Player', {
 				}
 			break;
 			case 'Floor':
-			console.log('test')
 				this._speed = 0;
 				if (this._movement) {
 				  this.x -= this._movement.x;
 				}
 				if (this._movement.y !== (this._moveSpeed * -1)) {
 				  this.y -= this._movement.y;
+				}
+				if (Game.playerKeys.E) {
+					this.turnGold(hitObject);
 				}
 			break;
 			case 'Camel':
@@ -212,6 +212,7 @@ Crafty.c('Player', {
 
 	checkAdjacent: function() {
 		var currentSquare = {x:Math.floor(this.at().x), y:Math.floor(this.at().y)};
+		console.log(Game.currentMap.occupiedSquares)
 		if (Game.currentMap.occupiedSquares[currentSquare.y - 1][currentSquare.x]) {
 			var squareUp = Game.currentMap.occupiedSquares[currentSquare.y - 1][currentSquare.x].type;
 		}
@@ -229,6 +230,5 @@ Crafty.c('Player', {
 
 	turnGold: function (hitObject) {
 		hitObject.color('yellow');
-		console.log(hitObject);
 	}
 });
