@@ -29,6 +29,7 @@ var Game = {
 	currentMap: {x:0, y:0},
 	player: null,
 	keyPressed: false,
+	mouse: {},
 	//initialize and start game
 	start: function() {
 		//Start crafty and set background color

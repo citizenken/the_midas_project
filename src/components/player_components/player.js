@@ -1,9 +1,13 @@
 Crafty.c('Player', {
 	_activeItem: 'Sword',
+	_addingGold: false,
+	_armLocation: null,
+	_arm: null,
+	_removingGold: false,
 	_adjacent: null,
 	_currentLocation: null,
 	_currentZone: {x:null, y:null},
-	_direction: '',
+	_direction: 'RIGHT',
 	_followers: [1,1,1,1,1,1,1,1],
 	_hitPoints: 30,
 	_goldLevel: 5,
@@ -18,8 +22,10 @@ Crafty.c('Player', {
 	_water: 30,
 	_tradeItems: [],
 	init: function() {
-		this.requires('Actor, Twoway, Collision, WiredHitBox, Delay, Persist, Solid, Color, Gravity')
-			.color('black')
+		this.requires('Actor, Twoway, Collision, WiredHitBox, Delay, Persist, Solid, Color, Gravity');
+			this._armLocation = {x: this.x + 16, y: this.y + 16};
+			this._arm = Crafty.e('Arm');
+			this.color('black')
 			.gravity('Floor')
 			.gravityConst(0.6)
 			// ._playerHUD = Crafty.e('HUD');
@@ -27,7 +33,6 @@ Crafty.c('Player', {
 			.twoway(this._moveSpeed, this._jumpSpeed)
 			.bind('EnterFrame', function(data) {
 				this.checkDead();
-				// this.updateHUD();
 			})
 			this.bind('KeyDown', function(e) {
 				switch (e.key) {
@@ -41,9 +46,9 @@ Crafty.c('Player', {
 						break;
 					case Crafty.keys.E:
 						Game.playerKeys.E = true;
-/*						if (Game.playerKeys.DOWN_ARROW) {
-							this.turnGold(this._adjacent.down)
-						}*/
+						break;
+					case Crafty.keys.R:
+						Game.playerKeys.R = true;
 						break;
 					case Crafty.keys.SPACE:
 						Game.playerKeys.SPACE = true;
@@ -90,21 +95,6 @@ Crafty.c('Player', {
 			.onHit('Dropped', function() {}, function () {
 				Crafty('Dropped').removeComponent('Dropped');
 			})
-			.bind('KeyHold', function(e) {
-				switch (e.key) {
-					case Crafty.keys.E:
-						Game.playerKeysHolding.E = true;
-						this.trigger('Gilding');
-						break;
-					case Crafty.keys.UP_ARROW:
-						console.log(e.key)
-		                this._up = true;
-						break;
-					case Crafty.keys.UP_RIGHT:
-						console.log(e.key)
-						break;												
-				}
-			})
 			.bind('KeyUp', function(e) {
 				switch (e.key)
 				{
@@ -121,7 +111,9 @@ Crafty.c('Player', {
 						break;
 					case Crafty.keys.E:
 						Game.playerKeys.E = false;
-						Game.playerKeysHolding.E = false;
+						break;
+					case Crafty.keys.R:
+						Game.playerKeys.R = false;
 						break;
 					case Crafty.keys.SPACE:
 						Game.playerKeys.SPACE = false;
@@ -135,9 +127,10 @@ Crafty.c('Player', {
 					hitObjectType = 'Void';
 				} else if (hitObject.has('Floor')) {
 					hitObjectType = 'Floor';
-				} else if (hitObject.has('Button')) {
-					hitObjectType = 'Button';
+				} else if (hitObject.has('InterActive')) {
+					hitObjectType = 'InterActive';
 				}
+				console.log(data)
 				this.collisionHandler(hitObjectType, hitObject);
 			})
 			.bind('Moved', function(data) {
@@ -147,13 +140,13 @@ Crafty.c('Player', {
 				this._adjacent = this.checkAdjacent();
 			})
 			.bind('NewDirection', function(data) {
-				if (data.y === -1 || data === 'UP') {
+				if (data.y === -this._moveSpeed || data === 'UP') {
 					this._direction = 'UP';
-				} else if (data.y === 1 || data === 'DOWN') {
+				} else if (data.y === this._moveSpeed || data === 'DOWN') {
 					this._direction = 'DOWN';
-				} else if (data.x === 1 || data === 'RIGHT') {
+				} else if (data.x === this._moveSpeed || data === 'RIGHT') {
 					this._direction = 'RIGHT';
-				} else if (data.x === -1 || data === 'LEFT') {
+				} else if (data.x === -this._moveSpeed || data === 'LEFT') {
 					this._direction = 'LEFT';
 				}
 			});
@@ -195,6 +188,7 @@ Crafty.c('Player', {
 				}
 			break;
 			case 'Floor':
+			console.log('test')
 				this._speed = 0;
 				if (this._movement) {
 				  this.x -= this._movement.x;
@@ -203,11 +197,16 @@ Crafty.c('Player', {
 				  this.y -= this._movement.y;
 				}
 			break;
-			// case 'Button':
-			// 	if (Game.playerKeys.E) {
-			// 		this.turnGold(hitObject);
-			// 	}
-			// break;
+			case 'InterActive':
+				if (Game.playerKeys.E && !this._addingGold) {
+					this._addingGold = true;
+					this.turnGold(hitObject);
+				}
+				if (Game.playerKeys.R && !this._removingGold) {
+					this._removingGold = true;
+					this.removeGold(hitObject);
+				}
+			break;
 			case 'TradeItem':
 			// console.log(this._tradeItems.length);
 				if (this._tradeItems.length < 3) {
@@ -252,21 +251,80 @@ Crafty.c('Player', {
 	},
 
 	turnGold: function (hitObject) {
-		var mg = hitObject._maxGold;
-		var tg = hitObject._targetGold;
-		var cg = hitObject._currentGold;
-		// this.delay(function(){
-			if (cg === tg) {
-				hitObject.color('yellow');
-			} else if (cg < mg) {
-				cg++;
-				console.log(cg)
-			} else if (cg >= mg) {
-				hitObject.destroy();
-			}
-		// }, 1000, -1);
+		if (Game.playerKeys.E) {
+			this.delay(function(){
+					if (hitObject._currentGold === hitObject._targetGold) {
+						hitObject.color('yellow');
+						hitObject._currentGold++;
+					} else if (hitObject._currentGold <= hitObject._maxGold) {
+						if (hitObject._currentGold === hitObject._maxGold) {
+							hitObject.destroy();
+						} else {
+							hitObject._currentGold++;
+						}
+					}
+				this._addingGold = false;
+			}, 1000);
+		}
 	},
 
-	gilding: function(hitObject) {
+	removeGold: function (hitObject) {
+		this.delay(function(){
+			if (hitObject._currentGold > 0) {
+				hitObject._currentGold--;
+			}
+			this._removingGold = false;
+		}, 1000);
 	}
 });
+
+Crafty.c('Arm', {
+	init: function() {
+		var player = Crafty('Player');
+		this.requires('2D, Canvas, Grid, Color'); //, BoxOverlays
+		// this.origin(5, 5);
+		this.attr({x:player._armLocation.x - 7, y:player._armLocation.y+5, h:10, w:2});
+		player.attach(this);
+		this.color('orange');
+		this.bind('EnterFrame', function() {
+			console.log(Game.mouse.mouseLocation)
+			if (Game.mouse.mouseLocation && Game.mouse.down) {
+				this.checkAngle()
+			}
+		});
+	},
+
+	checkAngle: function() {
+		this.diffx = this._origin.x - Game.mouse.mouseLocation.x;
+		this.diffy = this._origin.y - Game.mouse.mouseLocation.y;
+		this._angleRad = Math.atan(this.diffy / this.diffx);
+		this._angleDeg = this._angleRad * ((180 / Math.PI) + 180);
+		console.log(this._angleDeg);
+
+		if (Game.mouse.mouseLocation.x > this.x) {
+			this._angleDeg += 180;
+		}
+
+		console.log(this._angleDeg, Game.mouse.mouseLocation.x > this.x);
+		if (Game.mouse.mouseLocation.x > this.x) {
+			if (this._angleDeg < 360 && this._angleDeg > 190) {
+				console.log('test')
+				this.rotation = this._angleDeg;
+			} else if (this._angleDeg > 360) {
+				this.rotation = 0;
+			} else if (this._angleDeg < 190) {
+				this.rotation = 190;
+			}
+		}
+
+		if (Game.mouse.mouseLocation.x < this.x) {
+			if (this._angleDeg < 0 && this._angleDeg > 170) {
+				this.rotation = this._angleDeg;
+			} else if (this._angleDeg > 0) {
+				this.rotation = 0;
+			} else if (this._angleDeg < 170) {
+				this.rotation = 170;
+			}
+		}
+	}
+})
