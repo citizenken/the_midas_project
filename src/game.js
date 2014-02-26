@@ -36,7 +36,8 @@ var Game = {
 		Crafty.background('gray');
 		Game.worldMap = createWorldMap();
 		// Crafty.settings.modify('autoPause', true)
-		Game.playerKeys = [];
+		Game.playerKeys = {};
+		Game.playerKeysHolding = {};
 		Game.playerKeys.M = false;
 		Crafty.scene('LabLvl1');
 	}

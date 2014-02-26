@@ -38,8 +38,8 @@ Crafty.c('Button', {
 	init: function() {
 	this.requires('Scenery, Color, InterActive')
 	  .color('red');
-	  this.h = 5;
-	  this.w = 5;
+	  this.h = 10;
+	  this.w = 10;
 	},
 });
 

@@ -41,9 +41,9 @@ Crafty.c('Player', {
 						break;
 					case Crafty.keys.E:
 						Game.playerKeys.E = true;
-						if (Game.playerKeys.DOWN_ARROW) {
+/*						if (Game.playerKeys.DOWN_ARROW) {
 							this.turnGold(this._adjacent.down)
-						}
+						}*/
 						break;
 					case Crafty.keys.SPACE:
 						Game.playerKeys.SPACE = true;
@@ -90,6 +90,21 @@ Crafty.c('Player', {
 			.onHit('Dropped', function() {}, function () {
 				Crafty('Dropped').removeComponent('Dropped');
 			})
+			.bind('KeyHold', function(e) {
+				switch (e.key) {
+					case Crafty.keys.E:
+						Game.playerKeysHolding.E = true;
+						this.trigger('Gilding');
+						break;
+					case Crafty.keys.UP_ARROW:
+						console.log(e.key)
+		                this._up = true;
+						break;
+					case Crafty.keys.UP_RIGHT:
+						console.log(e.key)
+						break;												
+				}
+			})
 			.bind('KeyUp', function(e) {
 				switch (e.key)
 				{
@@ -106,6 +121,7 @@ Crafty.c('Player', {
 						break;
 					case Crafty.keys.E:
 						Game.playerKeys.E = false;
+						Game.playerKeysHolding.E = false;
 						break;
 					case Crafty.keys.SPACE:
 						Game.playerKeys.SPACE = false;
@@ -123,9 +139,6 @@ Crafty.c('Player', {
 					hitObjectType = 'Button';
 				}
 				this.collisionHandler(hitObjectType, hitObject);
-			})
-			.bind('Gilding', function() {
-				console.log(this.hit('InterActive'))
 			})
 			.bind('Moved', function(data) {
 				this._previousLocation = data;
@@ -242,19 +255,16 @@ Crafty.c('Player', {
 		var mg = hitObject._maxGold;
 		var tg = hitObject._targetGold;
 		var cg = hitObject._currentGold;
-		console.log('test');
-		while (Game.playerKeys.E && cg <= mg) {
-
-			this.delay(function(){
-				if (cg === tg) {
-					hitObject.color('yellow');
-				} else if (cg < mg) {
-					cg++;
-				} else if (cg >= mg) {
-					hitObject.destroy();
-				}
-			}, 1000)
-		}
+		// this.delay(function(){
+			if (cg === tg) {
+				hitObject.color('yellow');
+			} else if (cg < mg) {
+				cg++;
+				console.log(cg)
+			} else if (cg >= mg) {
+				hitObject.destroy();
+			}
+		// }, 1000, -1);
 	},
 
 	gilding: function(hitObject) {
