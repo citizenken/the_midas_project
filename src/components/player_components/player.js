@@ -1,6 +1,6 @@
 Crafty.c('Player', {
 	_activeItem: 'Sword',
-	_activeMode: 'none',
+	_activeMode: 'add',
 	_addingGold: false,
 	_armLocation: null,
 	_arm: null,
@@ -143,11 +143,11 @@ Crafty.c('Player', {
 					this._direction = 'UP';
 				} else if (data.y === this._moveSpeed || data === 'DOWN') {
 					this._direction = 'DOWN';
-				} else if (data.x === this._moveSpeed || data === 'RIGHT') {
+				} /*else if (data.x === this._moveSpeed || data === 'RIGHT') {
 					this._direction = 'RIGHT';
 				} else if (data.x === -this._moveSpeed || data === 'LEFT') {
 					this._direction = 'LEFT';
-				}
+				}*/
 			});
 	},
 
@@ -308,7 +308,7 @@ Crafty.c('Arm', {
 	_frontArm: false,
 	init: function() {
 		var player = Crafty('Player');
-		this.requires('2D, Canvas, Color, MouseFace, Tween'); //, BoxOverlays
+		this.requires('2D, Canvas, Color, MouseFace, Touch'); //, BoxOverlays
 		this.origin(5, 5);
 		this.attr({
 			move: {left: false, right: false, up: false, down: false},
@@ -331,17 +331,14 @@ Crafty.c('Arm', {
 		this.bind('MouseMoved', function(e) {
 			if (this._parent._activeMode === this._armMode) {
 				this.curAngle = (e.grad) + 90;
-				if (this._parent._direction === 'RIGHT'){
-					if (e.pos.x === this.x) {
-						this._parent._direction = 'LEFT';
-					}
-					this.rotation = this.curAngle + 180;
-				} else if (this._parent._direction === 'LEFT') {
-					if (e.pos.x === this.x) {
-						this._parent._direction = 'RIGHT';
-					}
-					this.rotation = this.curAngle;
+				if (e.pos.x < this.x) {
+					this._parent._direction = 'LEFT';
+				} else if (e.pos.x > this.x) {
+					this._parent._direction = 'RIGHT';
 				}
+				this.rotation = this.curAngle + 180;
+			} else {
+				this.rotation = 0;
 			}
 		});
 	}
