@@ -199,14 +199,26 @@ Crafty.c('MouseLayer', {
 		this.attr({w:Game.width(), h:Game.height()});
 		this.bind('MouseMove', function(e) {
 			// if (e.buttons == 1) {
-				Game.mouse.down = true;
-				Game.mouse.mouseLocation = {x:e.clientX, y:e.clientY};
+				// Game.mouse.down = true;
+				// Game.mouse.mouseLocation = {x:e.clientX, y:e.clientY};
 			// }
 		});
-		this.bind('MouseUp', function(e) {
-			Game.mouse.down = false;
-			Game.player._arm.rotation = 0;
+		this.bind('MouseDown', function(e) {
+			var button = e.buttons;
+			console.log(e)
+			if (Game.mousebutton[0] && button === 1) {
+				Game.mousebutton[0] = false;
+			} else if (!Game.mousebutton[0] && button === 1) {
+				Game.mousebutton[0] = true;
+			} else if (Game.mousebutton[1] && button === 2) {
+				Game.mousebutton[1] = false;
+			} else if (!Game.mousebutton[1] && button === 2) {
+				Game.mousebutton[1] = true;
+			}
 		});
+/*		this.bind('MouseUp', function(e) {
+			Game.mouse.button = e.buttons;
+		});*/
 	}
 });
 
