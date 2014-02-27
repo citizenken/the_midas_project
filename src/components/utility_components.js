@@ -197,7 +197,7 @@ Crafty.c('MouseLayer', {
 	init: function() {
 		this.requires('2D, Mouse, Canvas');
 		this.attr({w:Game.width(), h:Game.height()});
-		this.bind('Click', function(e) {
+		this.bind('MouseMove', function(e) {
 			// if (e.buttons == 1) {
 				Game.mouse.down = true;
 				Game.mouse.mouseLocation = {x:e.clientX, y:e.clientY};

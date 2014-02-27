@@ -281,36 +281,49 @@ Crafty.c('Player', {
 Crafty.c('Arm', {
 	init: function() {
 		var player = Crafty('Player');
-		this.requires('2D, Canvas, Grid, Color'); //, BoxOverlays
+		this.requires('2D, Canvas, Grid, Color, Tween'); //, BoxOverlays
 		// this.origin(5, 5);
 		this.attr({x:player._armLocation.x - 7, y:player._armLocation.y+5, h:10, w:2});
 		this.vector = new Crafty.math.Vector2D(this.x, this.y);
 		player.attach(this);
-		this.rotation = 360;
 		this.color('orange');
 		this.bind('EnterFrame', function() {
-			if (Game.mouse.mouseLocation && Game.mouse.down) {
+			if (Game.mouse.mouseLocation) {
 				this.checkAngle()
 			}
 		});
 	},
 
 	checkAngle: function() {
+		// this.rotation = 360;
 		this.vector2 = new Crafty.math.Vector2D(Game.mouse.mouseLocation.x, Game.mouse.mouseLocation.y);
-		this._angleDeg = Crafty.math.radToDeg(this.vector.angleTo(this.vector2))
-		console.log(this._angleDeg)
+		this._angleDeg = Crafty.math.radToDeg(this.vector.angleTo(this.vector2) * 10)
+		// console.log(this.vector.angleTo(this.vector2) * 10)
+		// console.log(this._angleDeg)
 		this.diffx = Game.mouse.mouseLocation.x - this._origin.x;
 		this.diffy = Game.mouse.mouseLocation.y - this._origin.y;
 		this._angleRad = Math.acos(this.diffy, this.diffx);
-/*		this._angleDeg = this._angleRad * ((180 / Math.PI));
+		// this.rotation = 360
+		console.log(this._angleDeg)
+		this.tween({rotation:this._angleDeg}, 500)
+/*		console.log(this._angleDeg)
+		// this._angleDeg = 360 - this._angleDeg
+		console.log(this._angleDeg)
+
+		if (this._angleDeg < 180) {
+			this._angleDeg += 90
+		}
+		// console.log(360 - this._angleDeg)
+
+		this._angleDeg = this._angleRad * ((180 / Math.PI));
 		// console.log(this._angleDeg);
 
 		if (this._angleDeg > 180) {
 			this._parent.flip('x');
 			console.log('flipped')
-		}*/
-		this.rotation -= this._angleDeg
-		console.log(this._rotation)
+		}
+		this.rotation = this._angleDeg
+		console.log(this._rotation)*/
 		// console.log(this._angleDeg + 90)
 	}
 })
