@@ -197,14 +197,13 @@ Crafty.c('MouseLayer', {
 	init: function() {
 		this.requires('2D, Mouse, Canvas');
 		this.attr({w:Game.width(), h:Game.height()});
-		this.bind('MouseMove', function(e) {
-			if (e.buttons == 1) {
+		this.bind('Click', function(e) {
+			// if (e.buttons == 1) {
 				Game.mouse.down = true;
 				Game.mouse.mouseLocation = {x:e.clientX, y:e.clientY};
-			}
+			// }
 		});
 		this.bind('MouseUp', function(e) {
-			console.log('test')
 			Game.mouse.down = false;
 			Game.player._arm.rotation = 0;
 		});

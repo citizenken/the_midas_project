@@ -284,10 +284,11 @@ Crafty.c('Arm', {
 		this.requires('2D, Canvas, Grid, Color'); //, BoxOverlays
 		// this.origin(5, 5);
 		this.attr({x:player._armLocation.x - 7, y:player._armLocation.y+5, h:10, w:2});
+		this.vector = new Crafty.math.Vector2D(this.x, this.y);
 		player.attach(this);
+		this.rotation = 360;
 		this.color('orange');
 		this.bind('EnterFrame', function() {
-			console.log(Game.mouse.mouseLocation)
 			if (Game.mouse.mouseLocation && Game.mouse.down) {
 				this.checkAngle()
 			}
@@ -295,36 +296,21 @@ Crafty.c('Arm', {
 	},
 
 	checkAngle: function() {
-		this.diffx = this._origin.x - Game.mouse.mouseLocation.x;
-		this.diffy = this._origin.y - Game.mouse.mouseLocation.y;
-		this._angleRad = Math.atan(this.diffy / this.diffx);
-		this._angleDeg = this._angleRad * ((180 / Math.PI) + 180);
-		console.log(this._angleDeg);
+		this.vector2 = new Crafty.math.Vector2D(Game.mouse.mouseLocation.x, Game.mouse.mouseLocation.y);
+		this._angleDeg = Crafty.math.radToDeg(this.vector.angleTo(this.vector2))
+		console.log(this._angleDeg)
+		this.diffx = Game.mouse.mouseLocation.x - this._origin.x;
+		this.diffy = Game.mouse.mouseLocation.y - this._origin.y;
+		this._angleRad = Math.acos(this.diffy, this.diffx);
+/*		this._angleDeg = this._angleRad * ((180 / Math.PI));
+		// console.log(this._angleDeg);
 
-		if (Game.mouse.mouseLocation.x > this.x) {
-			this._angleDeg += 180;
-		}
-
-		console.log(this._angleDeg, Game.mouse.mouseLocation.x > this.x);
-		if (Game.mouse.mouseLocation.x > this.x) {
-			if (this._angleDeg < 360 && this._angleDeg > 190) {
-				console.log('test')
-				this.rotation = this._angleDeg;
-			} else if (this._angleDeg > 360) {
-				this.rotation = 0;
-			} else if (this._angleDeg < 190) {
-				this.rotation = 190;
-			}
-		}
-
-		if (Game.mouse.mouseLocation.x < this.x) {
-			if (this._angleDeg < 0 && this._angleDeg > 170) {
-				this.rotation = this._angleDeg;
-			} else if (this._angleDeg > 0) {
-				this.rotation = 0;
-			} else if (this._angleDeg < 170) {
-				this.rotation = 170;
-			}
-		}
+		if (this._angleDeg > 180) {
+			this._parent.flip('x');
+			console.log('flipped')
+		}*/
+		this.rotation -= this._angleDeg
+		console.log(this._rotation)
+		// console.log(this._angleDeg + 90)
 	}
 })
