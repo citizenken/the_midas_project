@@ -11,38 +11,17 @@ Crafty.scene('Loading', function(){
 
   // Load our sprite map image
   Crafty.load([
-	'assets/actors/camel.png',
-	'assets/actors/player_character.png',
-	'assets/actors/lead_camel_white.png',
-	'assets/tiles/desert_objects_32.png',
-	'assets/tiles/desert_objects_64.png',
-	'assets/tiles/desert_objects_32x64.png'
+	'assets/actors/human.png',
 	], function(){
 	// Once the images are loaded...
 
 	// Define the PC's sprite to be the first sprite in the third row of the
 	//  animation sprite map
-	Crafty.sprite(32, 32, 'assets/actors/camel_32.png', {
-		spr_camel:  [0, 2, 0, 0]
+	Crafty.sprite(64, 64, 'assets/actors/human.png', {
+		spr_human:  [0, 10, 0, 0]
 	  });
 
-	Crafty.sprite(32, 32, 'assets/actors/player_character.png', {
-		spr_white_player:  [1, 0, 0, 0]
-	});
-
-	Crafty.sprite(32, 32, 'assets/actors/blue_character.png', {
-		spr_blue_player:  [1, 2, 0, 0]
-	});
-
-	Crafty.sprite(32, 40, 'assets/actors/lead_camel_white.png', {
-		spr_lead_camel_white:  [0, 1, 0, 0],
-	});
-
-	Crafty.sprite(32, 32, 'assets/tiles/desert_objects_32.png', {
-		spr_covered_well_32:  [0, 4, 0, 0],
-		spr_uncovered_well_32:  [1, 4, 0, 0],
-	});
 	// Now that our sprites are ready to draw, start the game
-	Crafty.scene('DesertZone');
+	Crafty.scene('LabLvl1');
   })
 });

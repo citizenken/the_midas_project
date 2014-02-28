@@ -29,7 +29,7 @@ var Game = {
 	currentMap: {x:0, y:0},
 	player: null,
 	keyPressed: false,
-	mousebutton: [],
+	mouseButton: false,
 	//initialize and start game
 	start: function() {
 		//Start crafty and set background color
@@ -40,7 +40,7 @@ var Game = {
 		Game.playerKeys = {};
 		Game.playerKeysHolding = {};
 		Game.playerKeys.M = false;
-		Crafty.scene('LabLvl1');
+		Crafty.scene('Loading');
 	}
 };
 

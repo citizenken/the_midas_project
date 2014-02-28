@@ -34,7 +34,6 @@ function parsemap (mapArray, edges) {
 				case '@':
 					if (Crafty('Player').length === 0) {
 						Game.player = Crafty.e('Player, WhiteCharacter').at(x,y);
-						Game.player.h = Game.map_grid.tile.height * 2;
 						occupiedSquares[y][x] = false;
 					}
 				break;

@@ -93,20 +93,11 @@ init: function() {
 			Game.keyPressed = true;
 			if (e.key === Crafty.keys.ESC) {
 				Crafty.pause();
-				console.log(Crafty.isPaused());
 			}
 		}
 	});
 	this.bind('KeyUp', function(e) {
-		/*if (e.key == Crafty.keys['ESC']) {
-			Crafty.pause(true);
-			this._paused = true;
-			console.log(Crafty.isPaused())
-		} else if (e.key == Crafty.keys['ESC']) {
-			Crafty.pause(false);
-			this._paused = false;
-			console.log(Crafty.isPaused())
-		}*/
+		Game.keyPressed = false;
 	});
 
 	// console.log(Crafty.isPaused());
@@ -116,6 +107,7 @@ init: function() {
 		}
 	});
 	this.bind('Unpause', function() {
+		console.log(Crafty('PauseBackground').length);
 		if (Crafty('PauseBackground').length === 1) {
 			Crafty('PauseBackground').destroy();
 		}
@@ -205,7 +197,6 @@ Crafty.c('MouseLayer', {
 		});
 		this.bind('MouseDown', function(e) {
 			var button = e.buttons;
-			console.log(e)
 			if (Game.mousebutton[0] && button === 1) {
 				Game.mousebutton[0] = false;
 			} else if (!Game.mousebutton[0] && button === 1) {
@@ -226,7 +217,7 @@ Crafty.c('Actor', {
 	init: function() {
 		this.requires('2D, Canvas, Grid');
 		this.bind('Click', function () {
-			console.log(this);
+			// console.log(this);
 		});
 	},
 		checkDead: function() {

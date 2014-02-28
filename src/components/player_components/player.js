@@ -9,29 +9,35 @@ Crafty.c('Player', {
 	_currentLocation: null,
 	_currentZone: {x:null, y:null},
 	_direction: 'RIGHT',
+	_flipped: false,
 	_hitPoints: 30,
 	_goldLevel: 5,
 	_items: [],
 	_jumpSpeed: 8,
 	_justTriggeredScene: false,
-	_modes: ['none', 'add', 'remove'],
+	_modes: ['add', 'remove'],
 	_money: 000000000000,
 	_moveSpeed: 4,
 	_nextLocation: null,
 	_playerHUD: null,
 	_previousLocation: null,
+	_spriteDirction: 'RIGHT',
 	_water: 30,
 	_tradeItems: [],
 	init: function() {
-		this.requires('Actor, Twoway, Collision, Delay, Persist, Solid, Color, Gravity, BoxOverlays');
+		this.requires('Actor, Twoway, Collision, Delay, Persist, Solid, Gravity, SpriteAnimation, spr_human');
+			this.h = Game.map_grid.tile.height * 2;
+			this.w = Game.map_grid.tile.width * 2;
 			this.addArms();
-			this.color('black')
-			.gravity('Floor')
-			.gravityConst(0.6)
-			.twoway(this._moveSpeed, this._jumpSpeed)
-			.bind('EnterFrame', function(data) {
+			this.gravity('Floor');
+			this.gravityConst(0.6);
+			this.reel('WalkForeward', 400, 0, 5, 7);
+			this.reel('WalkBackward', 400, 0, 5, 7);
+			this.reel('Kneel', 400, 0, 6, 2);
+			this.twoway(this._moveSpeed, this._jumpSpeed);
+			this.bind('EnterFrame', function(data) {
 				this.checkDead();
-			})
+			});
 			this.bind('KeyDown', function(e) {
 				switch (e.key) {
 					case Crafty.keys.DOWN_ARROW:
@@ -55,7 +61,7 @@ Crafty.c('Player', {
 						break;
 					case Crafty.keys.Y:
 						Game.playerKeys.Y = true;
-						this.changeItem();
+						// this.changeItem();
 						break;
 					case Crafty.keys['1']:
 						Game.playerKeys['1'] = true;
@@ -122,37 +128,31 @@ Crafty.c('Player', {
 			.onHit('Actor', function(data) {
 				var hitObject = data[0].obj;
 				var hitObjectType;
-				if (hitObject.has('Void')) {
+/*				if (hitObject.has('Void')) {
 					hitObjectType = 'Void';
-				} else if (hitObject.has('Floor')) {
+				} else */
+				if (hitObject.has('Floor')) {
 					hitObjectType = 'Floor';
-				} else if (hitObject.has('InterActive')) {
-					hitObjectType = 'InterActive';
 				}
-				console.log(data)
 				this.collisionHandler(hitObjectType, hitObject);
 			})
 			.bind('Moved', function(data) {
 				this._previousLocation = data;
 				this._currentLocation = {x:this.x, y:this.y};
 				this._nextLocation = {x:this.x + this._movement.x, y:this.y + this._movement.y};
-				this._adjacent = this.checkAdjacent();
+				// this._adjacent = this.checkAdjacent();
 			})
 			.bind('NewDirection', function(data) {
-				if (data.y === -this._moveSpeed || data === 'UP') {
-					this._direction = 'UP';
-				} else if (data.y === this._moveSpeed || data === 'DOWN') {
-					this._direction = 'DOWN';
-				} /*else if (data.x === this._moveSpeed || data === 'RIGHT') {
-					this._direction = 'RIGHT';
-				} else if (data.x === -this._moveSpeed || data === 'LEFT') {
-					this._direction = 'LEFT';
-				}*/
+				this.directionHandler(data);
 			});
 	},
 
 	addArms: function () {
-		this._armLocation = {x: this.x + 12, y: this.y + 26};
+		if (this._flipped) {
+			this._armLocation = {x: this.x + 46, y: this.y + 18};
+		} else if (!this._flipped) {
+			this._armLocation = {x: this.x + 28, y: this.y + 18};
+		}
 		this._armLeft = Crafty.e('Arm');
 		this._armLeft._armSide = 'LEFT';
 		this._armLeft.z = this.z - 1;
@@ -173,7 +173,6 @@ Crafty.c('Player', {
         } else {
             this._activeMode = this._modes[0];
         }
-        console.log(this._activeMode)
     },
 
 	collisionHandler: function(hitObjectType, hitObject) {
@@ -212,7 +211,6 @@ Crafty.c('Player', {
 				}
 			break;
 			case 'Floor':
-			console.log('test')
 				this._speed = 0;
 				if (this._movement) {
 				  this.x -= this._movement.x;
@@ -222,17 +220,15 @@ Crafty.c('Player', {
 				}
 			break;
 			case 'InterActive':
-				if (Game.playerKeys.E && !this._addingGold) {
+				if (Game.mouseButton && !this._addingGold && this._activeMode === 'add') {
 					this._addingGold = true;
 					this.turnGold(hitObject);
-				}
-				if (Game.playerKeys.R && !this._removingGold) {
+				} else if (Game.mouseButton && !this._removingGold && this._activeMode === 'remove') {
 					this._removingGold = true;
 					this.removeGold(hitObject);
 				}
 			break;
 			case 'TradeItem':
-			// console.log(this._tradeItems.length);
 				if (this._tradeItems.length < 3) {
 					this._tradeItems.push(hitObject._itemType);
 					hitObject.destroy();
@@ -274,8 +270,53 @@ Crafty.c('Player', {
 		return {up:squareUp, down:squareDown, right:squareRight, left:squareLeft};
 	},
 
+	directionHandler: function (data) {
+		if (data.y === -this._moveSpeed) {
+			this._direction = 'UP';
+		} else if (data.y === this._moveSpeed) {
+			this._direction = 'DOWN';
+			if (!this.isPlaying('Kneel')) {
+				this.animate('Kneel', -1);
+			}
+		} else if (data.x === this._moveSpeed) {
+			this.flipAnimation();
+			if (this._direction === 'RIGHT' && !this.isPlaying('WalkForeward')) {
+				this.animate('WalkForeward', -1);
+			} else if (this._direction === 'LEFT' && !this.isPlaying('WalkBackward')) {
+				this.animate('WalkBackward', -1);
+			}
+		} else if (data.x === -this._moveSpeed) {
+			this.flipAnimation();
+			if (this._direction === 'RIGHT' && !this.isPlaying('WalkBackward')) {
+				this.animate('WalkBackward', -1);
+			} else if (this._direction === 'LEFT' && !this.isPlaying('WalkForeward')) {
+				this.animate('WalkForeward', -1);
+			}
+		} else if (data.x === 0 && data.y === 0) {
+			this.pauseAnimation();
+			this.flipAnimation();
+		}
+	},
+
+	flipAnimation: function () {
+		if (this._direction !== this._spriteDirction && !this._flipped) {
+			this.flip('X');
+			this._spriteDirction = this._direction;
+			this._flipped = true;
+			this._armRight.x = this.x + 35;
+			this._armLeft.x = this.x + 35;
+		} else if (this._direction !== this._spriteDirction && this._flipped) {
+			this.unflip('X');
+			this._spriteDirction = this._direction;
+			this._flipped = false;
+			this._armRight.x = this.x + 28;
+			this._armLeft.x = this.x + 28;
+		}
+		return;
+	},
+
 	turnGold: function (hitObject) {
-		if (Game.playerKeys.E) {
+		if (Game.mouseButton) {
 			this.delay(function(){
 					if (hitObject._currentGold === hitObject._targetGold) {
 						hitObject.color('yellow');
@@ -285,6 +326,7 @@ Crafty.c('Player', {
 							hitObject.destroy();
 						} else {
 							hitObject._currentGold++;
+							console.log(hitObject._currentGold);
 						}
 					}
 				this._addingGold = false;
@@ -296,6 +338,7 @@ Crafty.c('Player', {
 		this.delay(function(){
 			if (hitObject._currentGold > 0) {
 				hitObject._currentGold--;
+				console.log(hitObject._currentGold);
 			}
 			this._removingGold = false;
 		}, 1000);
@@ -307,39 +350,63 @@ Crafty.c('Arm', {
 	_armSide: null,
 	_frontArm: false,
 	init: function() {
-		var player = Crafty('Player');
-		this.requires('2D, Canvas, Color, MouseFace, Touch'); //, BoxOverlays
-		this.origin(5, 5);
+		Crafty('Player').attach(this);
+		var player = this._parent;
+		this.requires('2D, Canvas, Color, MouseFace, Collision'); //, BoxOverlays
+		this.origin(2, 2);
 		this.attr({
 			move: {left: false, right: false, up: false, down: false},
 			x: player._armLocation.x, y: player._armLocation.y, z: 2 + 1,
 			moving: false,
 			curAngle: 0,
 		});
-		player.attach(this);
-		this.h = 1;
-		this.w = 10;
+		this.h = 25;
+		this.w = 5;
 		this.bind('EnterFrame', function() {
-			if (this._parent._direction == this._armSide) {
+			if (player._direction == this._armSide) {
 				this._frontArm = true;
-				this.z = this._parent.z + 1;
+				this.z = player.z + 1;
 			} else {
 				this._frontArm = false;
-				this.z = this._parent.z - 1;
+				this.z = player.z - 1;
 			}
+			if (player._activeMode == this._armMode && !this._visible) {
+				this._visible = true;
+			} else if (player._activeMode !== this._armMode && this._visible) {
+				this._visible = false;
+			}
+/*			if (player._flipped) {
+				this.x = player._armLocation.x;
+				this.y = player._armLocation.y;
+			}*/
+		});
+		this.bind('MouseDown', function() {
+			Game.mouseButton = true;
+		});
+		this.bind('MouseUp', function() {
+			Game.mouseButton = false;
 		});
 		this.bind('MouseMoved', function(e) {
-			if (this._parent._activeMode === this._armMode) {
+			if (player._activeMode === this._armMode && Game.mouseButton) {
 				this.curAngle = (e.grad) + 90;
 				if (e.pos.x < this.x) {
-					this._parent._direction = 'LEFT';
+					player._direction = 'LEFT';
 				} else if (e.pos.x > this.x) {
-					this._parent._direction = 'RIGHT';
+					player._direction = 'RIGHT';
 				}
+				player.trigger('NewDirection', player._movement);
 				this.rotation = this.curAngle + 180;
 			} else {
 				this.rotation = 0;
 			}
 		});
+		this.onHit('Actor', function(data) {
+			var hitObject = data[0].obj;
+			var hitObjectType;
+			if (hitObject.has('InterActive')) {
+				hitObjectType = 'InterActive';
+			}
+			player.collisionHandler(hitObjectType, hitObject);
+		})
 	}
 });
