@@ -3,6 +3,7 @@ Crafty.c('Player', {
 	_activeMode: 'add',
 	_addingGold: false,
 	_armLocation: null,
+	_armsVisible: false,
 	_arm: null,
 	_removingGold: false,
 	_adjacent: null,
@@ -31,12 +32,17 @@ Crafty.c('Player', {
 			this.addArms();
 			this.gravity('Floor');
 			this.gravityConst(0.6);
-			this.reel('WalkForeward', 400, 0, 5, 7);
-			this.reel('WalkBackward', 400, 0, 5, 7);
+			this.reel('WalkForeward', 800, 0, 5, 7);
+			this.reel('WalkBackward', 800, 0, 5, 7);
 			this.reel('Kneel', 400, 0, 6, 2);
 			this.twoway(this._moveSpeed, this._jumpSpeed);
 			this.bind('EnterFrame', function(data) {
 				this.checkDead();
+				if (this._armLeft._visible === false  && this._armRight._visible === false) {
+					this._armsVisible = false;
+				} else {
+					this._armsVisible = true;
+				}
 			});
 			this.bind('KeyDown', function(e) {
 				switch (e.key) {
@@ -158,11 +164,13 @@ Crafty.c('Player', {
 		this._armLeft.z = this.z - 1;
 		this._armLeft._armMode = 'remove';
 		this._armLeft.color('red');
+		this._armLeft._visible = false;
 
 		this._armRight = Crafty.e('Arm');
 		this._armRight._armSide = 'RIGHT';
 		this._armRight._armMode = 'add';
 		this._armRight.color('orange');
+		this._armRight._visible = false;
 	},
 
     changeMode: function() {
@@ -278,23 +286,39 @@ Crafty.c('Player', {
 			if (!this.isPlaying('Kneel')) {
 				this.animate('Kneel', -1);
 			}
-		} else if (data.x === this._moveSpeed) {
+		} else if (data.x === this._moveSpeed && !this._armsVisible) {
+			this._direction = 'RIGHT';
 			this.flipAnimation();
-			if (this._direction === 'RIGHT' && !this.isPlaying('WalkForeward')) {
-				this.animate('WalkForeward', -1);
-			} else if (this._direction === 'LEFT' && !this.isPlaying('WalkBackward')) {
-				this.animate('WalkBackward', -1);
-			}
+			this.facingRight();
+		}  else if (data.x === this._moveSpeed) {
+			this.flipAnimation();
+			this.facingRight();
+		} else if (data.x === -this._moveSpeed && !this._armsVisible) {
+			this._direction = 'LEFT';
+			this.flipAnimation();
+			this.facingLeft();
 		} else if (data.x === -this._moveSpeed) {
 			this.flipAnimation();
-			if (this._direction === 'RIGHT' && !this.isPlaying('WalkBackward')) {
-				this.animate('WalkBackward', -1);
-			} else if (this._direction === 'LEFT' && !this.isPlaying('WalkForeward')) {
-				this.animate('WalkForeward', -1);
-			}
+			this.facingLeft();
 		} else if (data.x === 0 && data.y === 0) {
 			this.pauseAnimation();
 			this.flipAnimation();
+		}
+	},
+
+	facingLeft: function () {
+		if (this._direction === 'RIGHT' && !this.isPlaying('WalkBackward')) {
+				this.animate('WalkBackward', -1);
+		} else if (this._direction === 'LEFT' && !this.isPlaying('WalkForeward')) {
+			this.animate('WalkForeward', -1);
+		}
+	},
+
+	facingRight: function () {
+		if (this._direction === 'RIGHT' && !this.isPlaying('WalkForeward')) {
+			this.animate('WalkForeward', -1);
+		} else if (this._direction === 'LEFT' && !this.isPlaying('WalkBackward')) {
+			this.animate('WalkBackward', -1);
 		}
 	},
 
@@ -312,6 +336,7 @@ Crafty.c('Player', {
 			this._armRight.x = this.x + 28;
 			this._armLeft.x = this.x + 28;
 		}
+
 		return;
 	},
 
@@ -319,6 +344,7 @@ Crafty.c('Player', {
 		if (Game.mouseButton) {
 			this.delay(function(){
 					if (hitObject._currentGold === hitObject._targetGold) {
+						hitObject._oldColor = hitObject._color;
 						hitObject.color('yellow');
 						hitObject._currentGold++;
 					} else if (hitObject._currentGold <= hitObject._maxGold) {
@@ -339,74 +365,10 @@ Crafty.c('Player', {
 			if (hitObject._currentGold > 0) {
 				hitObject._currentGold--;
 				console.log(hitObject._currentGold);
+			} else if (hitObject._currentGold === 0 && hitObject._color === 'yellow') {
+				hitObject.color(hitObject._oldColor)
 			}
 			this._removingGold = false;
-		}, 1000);
-	}
-});
-
-Crafty.c('Arm', {
-	_armMode: null,
-	_armSide: null,
-	_frontArm: false,
-	init: function() {
-		Crafty('Player').attach(this);
-		var player = this._parent;
-		this.requires('2D, Canvas, Color, MouseFace, Collision'); //, BoxOverlays
-		this.origin(2, 2);
-		this.attr({
-			move: {left: false, right: false, up: false, down: false},
-			x: player._armLocation.x, y: player._armLocation.y, z: 2 + 1,
-			moving: false,
-			curAngle: 0,
-		});
-		this.h = 25;
-		this.w = 5;
-		this.bind('EnterFrame', function() {
-			if (player._direction == this._armSide) {
-				this._frontArm = true;
-				this.z = player.z + 1;
-			} else {
-				this._frontArm = false;
-				this.z = player.z - 1;
-			}
-			if (player._activeMode == this._armMode && !this._visible) {
-				this._visible = true;
-			} else if (player._activeMode !== this._armMode && this._visible) {
-				this._visible = false;
-			}
-/*			if (player._flipped) {
-				this.x = player._armLocation.x;
-				this.y = player._armLocation.y;
-			}*/
-		});
-		this.bind('MouseDown', function() {
-			Game.mouseButton = true;
-		});
-		this.bind('MouseUp', function() {
-			Game.mouseButton = false;
-		});
-		this.bind('MouseMoved', function(e) {
-			if (player._activeMode === this._armMode && Game.mouseButton) {
-				this.curAngle = (e.grad) + 90;
-				if (e.pos.x < this.x) {
-					player._direction = 'LEFT';
-				} else if (e.pos.x > this.x) {
-					player._direction = 'RIGHT';
-				}
-				player.trigger('NewDirection', player._movement);
-				this.rotation = this.curAngle + 180;
-			} else {
-				this.rotation = 0;
-			}
-		});
-		this.onHit('Actor', function(data) {
-			var hitObject = data[0].obj;
-			var hitObjectType;
-			if (hitObject.has('InterActive')) {
-				hitObjectType = 'InterActive';
-			}
-			player.collisionHandler(hitObjectType, hitObject);
-		})
+		}, 400);
 	}
 });

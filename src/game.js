@@ -2,7 +2,7 @@ var Game = {
 	//This defines our grid's size and the size of each tile
 	map_grid: {
 		width: 80,
-		height: 10,
+		height: 15,
 		tile: {
 			width: 32,
 			height: 32,
@@ -30,10 +30,13 @@ var Game = {
 	player: null,
 	keyPressed: false,
 	mouseButton: false,
+	joystick: true,
 	//initialize and start game
 	start: function() {
 		//Start crafty and set background color
+		// Crafty.init(Game.width(), Game.height());
 		Crafty.init(Game.width(), Game.height());
+		// console.log(Crafty.mobile)
 		Crafty.background('gray');
 		Game.worldMap = createWorldMap();
 		// Crafty.settings.modify('autoPause', true)

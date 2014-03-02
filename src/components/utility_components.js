@@ -245,7 +245,7 @@ Crafty.c('BoxOverlays', {
 
             // bo is for internal use
             var bo = this.boxOverlays;
-            bo.drawMBR = false;
+            bo.drawMBR = true;
             bo.drawRot = true;
             bo.fontSize = 9;
             bo.boxColor = "#5AF";

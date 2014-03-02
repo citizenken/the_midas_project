@@ -1,4 +1,10 @@
 var labLvl1 = [
+'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+'################################################################################',
+'################################################################################',
 '################################################################################',
 '################################################################################',
 '################################################################################',
@@ -8,4 +14,6 @@ var labLvl1 = [
 '###############ffffffff###ffffffffff############################################',
 '#@#####b######fffffffff###ffffffffff############################################',
 '############fffffffffff###ffffffffff############################################',
-'fffffffffffffffffffffff###ffffffffff############################################'];
+'fffffffffffffffffffffff###ffffffffff############################################',
+'fffffffffffffffffffffff###ffffffffff############################################',
+'fffffffffffffffffffffff###ffffffffff############################################',];
