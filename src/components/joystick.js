@@ -1,9 +1,34 @@
 Crafty.c('JoystickBase', {
+	_stick: null,
 	init: function () {
 		this.requires('2D, DOM, Color, Mouse, BoxOverlays')
-		this.attr({x:0, y: (Crafty.canvas._canvas.height - 100), w:100, h:100, z:50})
+		this.x = Crafty.viewport.x
+		this.y = Crafty.viewport.height - 100;
+		this.h = 100;
+		this.w = 100;
+		this.areaMap(
+			[this._x, this._y], //top left
+			[this._w, this._y], //top right
+			[this._x, this._h], //bottom left
+			[this._w, this._h] //bottom right
+			);
 		this.origin((this.w/2), (this.h/2));
 		this.color('black');
+		if (!this._stick) {
+			this._stick = Crafty.e('Joystick');
+			this._stick.x = this.x + (this.w/2);
+			this._stick.y = this.y + (this.h/2);
+		}
+	}
+})
+
+Crafty.c('Joystick', {
+	init: function () {
+		this.requires('2D, DOM, Color, Mouse, BoxOverlays');
+		this.color('red');
+		this.h = 50;
+		this.w = 50;
+		this.z = 5;
 		this.bind('EnterFrame', function() {
 			if (Game.joystick) {
 				Game.joystick = true;
@@ -13,7 +38,7 @@ Crafty.c('JoystickBase', {
 				this._visible = false;
 			}
 		})
-		this.bind('Click', function(e) {
+		this.bind('MouseDown', function(e) {
 			console.log(e);
 			var x = e.clientX;
 			var y = e.clientY;
@@ -44,5 +69,6 @@ Crafty.c('JoystickBase', {
 			// 	this._visible = false;
 			// }
 		})
+		
 	}
 })

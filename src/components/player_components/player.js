@@ -347,13 +347,9 @@ Crafty.c('Player', {
 						hitObject._oldColor = hitObject._color;
 						hitObject.color('yellow');
 						hitObject._currentGold++;
-					} else if (hitObject._currentGold <= hitObject._maxGold) {
-						if (hitObject._currentGold === hitObject._maxGold) {
-							hitObject.destroy();
-						} else {
-							hitObject._currentGold++;
-							console.log(hitObject._currentGold);
-						}
+					} else if (hitObject._currentGold <= hitObject._targetGold) {
+						hitObject._currentGold++;
+						console.log(hitObject._currentGold);
 					}
 				this._addingGold = false;
 			}, 400);

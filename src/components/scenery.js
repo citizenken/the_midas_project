@@ -32,7 +32,6 @@ Crafty.c('Floor', {
 });
 
 Crafty.c('Button', {
-	_maxGold: 15,
 	_targetGold: 10,
 	_currentGold: 0,
 	init: function() {
