@@ -32,8 +32,8 @@ Crafty.c('Player', {
 			this.addArms();
 			this.gravity('Floor');
 			this.gravityConst(0.6);
-			this.reel('WalkForeward', 800, 0, 5, 7);
-			this.reel('WalkBackward', 800, 0, 5, 7);
+			this.reel('WalkForeward', 400, 0, 1, 7);
+			this.reel('WalkBackward', 400, 0, 1, 7);
 			this.reel('Kneel', 400, 0, 6, 2);
 			this.twoway(this._moveSpeed, this._jumpSpeed);
 			this.bind('EnterFrame', function(data) {
@@ -308,7 +308,7 @@ Crafty.c('Player', {
 
 	facingLeft: function () {
 		if (this._direction === 'RIGHT' && !this.isPlaying('WalkBackward')) {
-				this.animate('WalkBackward', -1);
+			this.animate('WalkBackward', -1);
 		} else if (this._direction === 'LEFT' && !this.isPlaying('WalkForeward')) {
 			this.animate('WalkForeward', -1);
 		}

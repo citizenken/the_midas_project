@@ -4,7 +4,7 @@ Crafty.scene('LabLvl1', function() {
 
 	createMap(sceneMap, Game.map_grid.width, Game.map_grid.height);
 	// if (Crafty.mobile) {
-		// Crafty.e('JoystickBase');
+		Crafty.e('JSBase');
 	// }
 	// Game.mouselayer = Crafty.e('MouseLayer');
 	Crafty.viewport.init(600, Game.height());
