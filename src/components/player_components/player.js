@@ -45,6 +45,7 @@ Crafty.c('Player', {
 				}
 			});
 			this.bind('KeyDown', function(e) {
+				console.log(e);
 				switch (e.key) {
 					case Crafty.keys.DOWN_ARROW:
 						Game.playerKeys.DOWN_ARROW = true;

@@ -7,7 +7,7 @@ Crafty.scene('LabLvl1', function() {
 		Crafty.e('JSBase');
 	// }
 	// Game.mouselayer = Crafty.e('MouseLayer');
-	Crafty.viewport.init(600, Game.height());
+	// Crafty.viewport.init(600, Game.height());
 	Crafty.viewport.centerOn(Crafty('Player'));
 	Crafty.viewport.follow(Crafty('Player'));
 });
