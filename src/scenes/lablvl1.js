@@ -4,10 +4,10 @@ Crafty.scene('LabLvl1', function() {
 
 	createMap(sceneMap, Game.map_grid.width, Game.map_grid.height);
 	// if (Crafty.mobile) {
-		Crafty.e('JSBase');
+		// Crafty.e('JSBase');
 	// }
 	// Game.mouselayer = Crafty.e('MouseLayer');
-	// Crafty.viewport.init(600, Game.height());
+	Crafty.viewport.init(600, Game.height());
 	Crafty.viewport.centerOn(Crafty('Player'));
 	Crafty.viewport.follow(Crafty('Player'));
 });

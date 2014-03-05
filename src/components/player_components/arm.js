@@ -6,7 +6,7 @@ Crafty.c('Arm', {
 	init: function() {
 		Crafty('Player').attach(this);
 		var player = this._parent;
-		this.requires('2D, Canvas, Color, Collision'); //, BoxOverlays MouseFace
+		this.requires('2D, Canvas, Color, Collision, MouseFace'); //, BoxOverlays MouseFace
 		this.origin(2, 2);
 		this.attr({
 			move: {left: false, right: false, up: false, down: false},

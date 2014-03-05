@@ -120,12 +120,12 @@ init: function() {
 
 // Locate this entity at the given position on the grid
 at: function(x, y) {
-if (x === undefined && y === undefined) {
-  return { x: this.x/Game.map_grid.tile.width, y: this.y/Game.map_grid.tile.height};
-} else {
-  this.attr({ x: x * Game.map_grid.tile.width, y: y * Game.map_grid.tile.height});
-  return this;
-}
+	if (x === undefined && y === undefined) {
+	  return { x: this.x/Game.map_grid.tile.width, y: this.y/Game.map_grid.tile.height};
+	} else {
+	  this.attr({ x: x * Game.map_grid.tile.width, y: y * Game.map_grid.tile.height});
+	  return this;
+	}
 }
 });
 
@@ -216,9 +216,6 @@ Crafty.c('MouseLayer', {
 Crafty.c('Actor', {
 	init: function() {
 		this.requires('2D, Canvas, Grid');
-		this.bind('Click', function () {
-			// console.log(this);
-		});
 	},
 		checkDead: function() {
 			if (this._hitPoints === 0) {

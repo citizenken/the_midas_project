@@ -1,29 +1,20 @@
 Crafty.c('JSBase', {
 	_stick:null,
-	_poly:null,
     _center: {},
-<<<<<<< HEAD
-	init: function () {
-		this.requires('2D, DOM, Color');
-		this.x = 0;
-		this.y = 0;
-=======
-    _colors: ['red','blue','white','orange','yellow','green','purple','tan','brown'],
     _uL:null,
     _u:null,
     _uR:null,
     _bL:null,
     _b:null,
     _bR:null,
-    _l:null,
-    _r:null,
+    _L:null,
+    _R:null,
 	init: function () {
 		this.requires('2D, DOM, Color');
 		this.x = 50;
 		this.y = 300;
->>>>>>> working joystick
-		this.h = 198;
-		this.w = 198;
+		this.h = 99;
+		this.w = 99;
 		this._center.x = this.x + (this._w/2);
 		this._center.y = this.y + (this._h/2);
 		this.color('red');
@@ -36,8 +27,8 @@ Crafty.c('JSBase', {
 			stick._home = {x:stick.x, y:stick.y};
 			stick._parent = this;
 			stick._maxDistance = (this.w/2);
-            stick._xLimit = this.x + this.w
-            stick._yLimit = this.y + this.h
+            stick._xLimit = this.x + this.w;
+            stick._yLimit = this.y + this.h;
 		}
 		this._center.x = this.x + (this._w/2);
 		this._center.y = this.y + (this._h/2);
@@ -45,15 +36,37 @@ Crafty.c('JSBase', {
 	},
 
 	createZones: function() {
-    this._uL = new Crafty.polygon([0,0],[(this.w/3), 0],[(this.w/3), (this.h/3)],[0,(this.h/3)]);
-    console.log(this._uL);
-    this._u = new Crafty.polygon([],[],[],[]);
-    this._uR = new Crafty.polygon([],[],[],[]);
-    this._bL = new Crafty.polygon([],[],[],[]);
-    this._b = new Crafty.polygon([],[],[],[]);
-    this._bR = new Crafty.polygon([],[],[],[]);
-    this._l = new Crafty.polygon([],[],[],[]);
-    this._r = new Crafty.polygon([],[],[],[]);
+		this._uL = Crafty.e('JSZone');
+        this._uL.x = this.x;
+        this._uL.y = this.y;
+
+        this._u = Crafty.e('JSZone');
+        this._u.x = this.x + (this.w/3);
+        this._u.y = this.y;
+
+   		this._uR = Crafty.e('JSZone');
+        this._uR.x = this.x + (this.w/3 * 2);
+        this._uR.y = this.y;
+
+		this._L = Crafty.e('JSZone');
+        this._L.x = this.x;
+        this._L.y = this.y + (this.h/3);
+
+		this._R = Crafty.e('JSZone');
+        this._R.x = this.x + (this.w/3 * 2);
+        this._R.y = this.y + (this.h/3);
+
+		this._bL = Crafty.e('JSZone');
+        this._bL.x = this.x;
+        this._bL.y = this.y + (this.h/3 * 2);
+
+        this._b = Crafty.e('JSZone');
+        this._b.x = this.x + (this.w/3);
+        this._b.y = this.y + (this.w/3 * 2);
+
+		this._bR = Crafty.e('JSZone');
+        this._bR.x = this.x + (this.w/3 * 2);
+        this._bR.y = this.y + (this.h/3 * 2);
 	}
 });
 
@@ -72,9 +85,15 @@ Crafty.c('Joystick', {
             var centerX = this._center.x = this.x + (this.w/2);
             var centerY = this._center.y = this.y + (this.h/2);
 			var parent = this._parent;
+
+			console.log(this._parent._uL.isAt(centerX,centerY));
+			// console.log(this._parent._uL.containsPoint(centerX, centerY));
+
             if (Crafty.math.distance(centerX, centerY, parent._center.x, parent._center.y) >= this._maxDistance) {
 				this.adjustPosition();
 			}
+
+			// this.movePlayer();
 
 		});
 		this.bind('StopDrag', function() {
@@ -96,7 +115,15 @@ Crafty.c('Joystick', {
             this.y = this._parent.y - (this.h/2);
         }
         return;
-	},
+	}
 
 
 });
+
+Crafty.c('JSZone', {
+	init: function() {
+		this.requires('2D, DOM, Color');
+		this.h = (Crafty('JSBase').h/3);
+        this.w = (Crafty('JSBase').w/3);
+	}
+})
