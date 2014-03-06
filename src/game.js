@@ -35,15 +35,15 @@ var Game = {
 	start: function() {
 		//Start crafty and set background color
 		// Crafty.init(Game.width(), Game.height());
-		Crafty.init(Game.width(), Game.height());
+		Crafty.init(500, 500);
 		// console.log(Crafty.mobile)
-		Crafty.background('gray');
+		// Crafty.background('gray');
 		Game.worldMap = createWorldMap();
 		// Crafty.settings.modify('autoPause', true)
 		Game.playerKeys = {};
 		Game.playerKeysHolding = {};
 		Game.playerKeys.M = false;
-		Crafty.scene('Loading');
+		Crafty.scene('mouseTest');
 	}
 };
 
