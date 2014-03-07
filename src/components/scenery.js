@@ -61,10 +61,10 @@ Crafty.c('Mountain', {
 		.color('brown');
 		this.h = 100;
 		this.w = 100;
-		this.bind('MouseDownTP1', function(e) {
+		this.bind('MouseDown', function(e) {
 			this.color('green');
 		});
-		this.bind('MouseUpTP1', function(e) {
+		this.bind('MouseUp', function(e) {
 			this.color('brown');
 		});
 	},
