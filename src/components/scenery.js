@@ -57,34 +57,34 @@ Crafty.c('Mountain', {
 
 Crafty.c('Mountain', {
 	init: function() {
-	this.requires('Scenery, Color, Mouse')
+	this.requires('Scenery, Color, Touch')
 		.color('brown');
 		this.h = 100;
 		this.w = 100;
-		this.bind('MouseDown', function(e) {
+/*		this.bind('MouseDown', function(e) {
 			this.color('green');
 		});
 		this.bind('MouseUp', function(e) {
 			this.color('brown');
-		});
+		});*/
 	},
 });
 
 
 Crafty.c('Mountain2', {
 	init: function() {
-	this.requires('Scenery, Color, Mouse')
+	this.requires('Scenery, Color, Touch')
 		.color('brown');
 		this.x = 250
 		this.y = 250
 		this.h = 100;
 		this.w = 100;
-		this.bind('MouseDownTP2', function(e) {
+/*		this.bind('MouseDownTP2', function(e) {
 			this.color('yellow');
 		})
 		this.bind('MouseUpTP2', function(e) {
 			this.color('yellow');
-		})
+		})*/
 	},
 });
 

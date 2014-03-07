@@ -24,6 +24,7 @@ module.exports = function(grunt) {
         files: {
           'lib/the_midas_project.js': [
             'lib/crafty.js',
+            'lib/hammer.js',
             //'src/game.js',
             /*'src/components.js',*/
             //'src/scenes.js',
@@ -38,7 +39,7 @@ module.exports = function(grunt) {
     },
     watch: {
       js: {
-        files: ['src/**/*.js', 'map_editor/src/**/*.js'],
+        files: ['src/**/*.js', 'map_editor/src/**/*.js', 'lib/crafty.js'],
         tasks: ['uglify']
       }
     }
