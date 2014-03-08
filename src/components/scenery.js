@@ -61,12 +61,12 @@ Crafty.c('Mountain', {
 		.color('brown');
 		this.h = 100;
 		this.w = 100;
-/*		this.bind('MouseDown', function(e) {
+		this.bind('Touch1', function(e) {
 			this.color('green');
 		});
-		this.bind('MouseUp', function(e) {
+		this.bind('Release1', function(e) {
 			this.color('brown');
-		});*/
+		});
 	},
 });
 
@@ -79,12 +79,17 @@ Crafty.c('Mountain2', {
 		this.y = 250
 		this.h = 100;
 		this.w = 100;
-/*		this.bind('MouseDownTP2', function(e) {
-			this.color('yellow');
-		})
-		this.bind('MouseUpTP2', function(e) {
-			this.color('yellow');
-		})*/
+		this.bind('Swipe1', function(e) {
+			console.log(e)
+			if (this._color === 'yellow') {
+				this.color('brown');
+			} else {
+				this.color('yellow');
+			}
+		});
+/*		this.bind('Release1', function(e) {
+			this.color('brown');
+		});*/
 	},
 });
 
