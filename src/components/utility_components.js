@@ -185,9 +185,9 @@ Crafty.c('Void', {
 	}
 });
 
-Crafty.c('MouseLayer', {
+Crafty.c('TouchLayer', {
 	init: function() {
-		this.requires('2D, Mouse, Canvas');
+		this.requires('2D, Touch, Canvas');
 		this.attr({w:Game.width(), h:Game.height()});
 		this.bind('MouseMove', function(e) {
 			// if (e.buttons == 1) {
@@ -195,21 +195,24 @@ Crafty.c('MouseLayer', {
 				// Game.mouse.mouseLocation = {x:e.clientX, y:e.clientY};
 			// }
 		});
-		this.bind('MouseDown', function(e) {
-			var button = e.buttons;
-			if (Game.mousebutton[0] && button === 1) {
-				Game.mousebutton[0] = false;
-			} else if (!Game.mousebutton[0] && button === 1) {
-				Game.mousebutton[0] = true;
-			} else if (Game.mousebutton[1] && button === 2) {
-				Game.mousebutton[1] = false;
-			} else if (!Game.mousebutton[1] && button === 2) {
-				Game.mousebutton[1] = true;
-			}
+		this.bind('TouchStart1', function(e) {
+			// console.log(e);
+			Game.joystickLocation.x = e.realX;
+			Game.joystickLocation.y = e.realY;
+			var js = Crafty.e('JSBase');
+			js.x = e.realX - (js.w/2)
+			js.y = e.realY + (js.h/2)
+			Game.joystick = js;
+
 		});
-/*		this.bind('MouseUp', function(e) {
-			Game.mouse.button = e.buttons;
-		});*/
+		this.bind('TouchMove1', function(e){
+			Game.joystick._child.drag();
+		})
+		this.bind('TouchEnd1', function(e) {
+			Crafty('JSBase').destroy();
+			Game.joystick._child.destroy();
+			Game.joystick = null;
+		});
 	}
 });
 

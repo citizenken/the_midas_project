@@ -9,30 +9,16 @@ Crafty.c('JSBase', {
     _bR:null,
     _L:null,
     _R:null,
+    _visible: false,
 	init: function () {
-		this.requires('2D, DOM, Color');
-		this.x = 50;
-		this.y = 300;
+		this.requires('2D, DOM, Color, Touch');
 		this.h = 99;
 		this.w = 99;
 		this._center.x = this.x + (this._w/2);
 		this._center.y = this.y + (this._h/2);
 		this.color('red');
-		if (!this._stick) {
-			var stick = this._stick = Crafty.e('Joystick')
-			stick.x = this.x + (this.w/3);
-			stick.y = this.y + (this.h/3);
-            stick.h = (this.h/3);
-            stick.w = (this.w/3);
-			stick._home = {x:stick.x, y:stick.y};
-			stick._parent = this;
-			stick._maxDistance = (this.w/2);
-            stick._xLimit = this.x + this.w;
-            stick._yLimit = this.y + this.h;
-		}
-		this._center.x = this.x + (this._w/2);
-		this._center.y = this.y + (this._h/2);
 		this.createZones()
+		this.makeStick()
 	},
 
 	createZones: function() {
@@ -67,6 +53,23 @@ Crafty.c('JSBase', {
 		this._bR = Crafty.e('JSZone');
         this._bR.x = this.x + (this.w/3 * 2);
         this._bR.y = this.y + (this.h/3 * 2);
+	},
+
+	makeStick: function() {
+		console.log(this.w, this.h)
+		if (!this._stick) {
+			var stick = this._stick = Crafty.e('Joystick')
+			stick.x = Game.joystickLocation.x - 15
+			stick.y = Game.joystickLocation.y + 80;
+            stick.h = (this.h/3);
+            stick.w = (this.w/3);
+			stick._home = {x:stick.x, y:stick.y};
+			stick._parent = this;
+			this._child = stick;
+			stick._maxDistance = (this.w/2);
+            stick._xLimit = this.x + this.w;
+            stick._yLimit = this.y + this.h;
+		}
 	}
 });
 
@@ -77,11 +80,11 @@ Crafty.c('Joystick', {
 	_movingLeft:false,
 	_movingRight:false,
 	init: function () {
-		this.requires('2D, DOM, Draggable, Color');
+		this.requires('2D, DOM, Touch, Color');
 		this.color('black');
 		this.h = 50;
 		this.w = 50;
-		this.bind('Dragging', function(e) {
+/*		this.bind('Dragging', function(e) {
             var centerX = this._center.x = this.x + (this.w/2);
             var centerY = this._center.y = this.y + (this.h/2);
 			var parent = this._parent;
@@ -95,7 +98,7 @@ Crafty.c('Joystick', {
 
 			// this.movePlayer();
 
-		});
+		});*/
 		this.bind('StopDrag', function() {
 			this.x = this._home.x;
 			this.y = this._home.y;
@@ -115,6 +118,20 @@ Crafty.c('Joystick', {
             this.y = this._parent.y - (this.h/2);
         }
         return;
+	},
+
+	drag: function() {
+		console.log(this.x, this.y)
+		var centerX = this._center.x = this.x;
+        var centerY = this._center.y = this.y;
+		var parent = this._parent;
+
+		console.log(this._parent._uL.isAt(centerX,centerY));
+		// console.log(this._parent._uL.containsPoint(centerX, centerY));
+
+        if (Crafty.math.distance(centerX, centerY, parent._center.x, parent._center.y) >= this._maxDistance) {
+			this.adjustPosition();
+		}
 	}
 
 

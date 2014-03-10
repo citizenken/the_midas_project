@@ -61,10 +61,10 @@ Crafty.c('Mountain', {
 		.color('brown');
 		this.h = 100;
 		this.w = 100;
-		this.bind('Touch1', function(e) {
+		this.bind('TouchStart1', function(e) {
 			this.color('green');
 		});
-		this.bind('Release1', function(e) {
+		this.bind('TouchEnd1', function(e) {
 			this.color('brown');
 		});
 	},
@@ -79,17 +79,13 @@ Crafty.c('Mountain2', {
 		this.y = 250
 		this.h = 100;
 		this.w = 100;
-		this.bind('Swipe1', function(e) {
+		this.bind('TouchStart2', function(e) {
 			console.log(e)
-			if (this._color === 'yellow') {
-				this.color('brown');
-			} else {
-				this.color('yellow');
-			}
+			this.color('yellow');
 		});
-/*		this.bind('Release1', function(e) {
+		this.bind('TouchEnd2', function(e) {
 			this.color('brown');
-		});*/
+		});
 	},
 });
 

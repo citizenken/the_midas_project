@@ -40,13 +40,14 @@ Crafty.c("MouseFace", {
         if (this.disableControls || this.disregardMouseInput) {
             return;
         }
-		this.trigger("MouseUp", e);
+		this.trigger("TouchEnd2", e);
     },
     _onmousedown: function (e) {
         if (this.disableControls || this.disregardMouseInput) {
             return;
         }
-		this.trigger("MouseDown", e);
+        console.log('on mouse down')
+		this.trigger("TouchStart2", e);
     },
     _onmousemove: function (e) {
         if (this.disableControls || this.disregardMouseInput) {
@@ -71,7 +72,7 @@ Crafty.c("MouseFace", {
 
         this._dirAngle = Math.atan2(dy, dx);
 
-        this.trigger("MouseMoved", {pos: this._mousePos,
+        this.trigger("TouchMove2", {pos: this._mousePos,
             rad: this._dirAngle + this.pi,
             grad: (this._dirAngle + this.pi) * this._rad});
 
@@ -92,7 +93,7 @@ Crafty.c("MouseFace", {
         }
     },
     init: function () {
-        this.requires("Mouse");
+        this.requires("Touch");
 
         this._mousePos = {x: 0, y: 0};
 
@@ -110,9 +111,15 @@ Crafty.c("MouseFace", {
         this._directions = {none: 0, left: -1, right: 1, up: -2, down: 2};
         this._dirMove = this._directions.none;
 
-        Crafty.addEvent(this, Crafty.stage.elem, "mousemove", this._onmousemove);
-        Crafty.addEvent(this, Crafty.stage.elem, "mouseup", this._onmouseup);
-        Crafty.addEvent(this, Crafty.stage.elem, "mousedown", this._onmousedown);
+        this.bind('TouchStart2', function(e) {this._onmousedown(e)})
+        this.bind('TouchMove2', function(e) {
+            console.log('moving is moving right')
+            this._onmousemove(e)})
+        this.bind('TouchEnd2', function(e) {this._onmouseup(e)})
+
+        /*Crafty.addEvent(this, Crafty.stage.elem, "touchmove", this._onmousemove);
+        Crafty.addEvent(this, Crafty.stage.elem, "touchstart", this._onmouseup);
+        Crafty.addEvent(this, Crafty.stage.elem, "touchend", this._onmousedown);*/
     },
     MouseFace: function(origin) {
 		this._origin = origin;

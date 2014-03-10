@@ -1,11 +1,20 @@
 Crafty.c('JoystickBase', {
 	_stick: null,
+	_x: null,
+	_y: null,
 	init: function () {
-		this.requires('2D, DOM, Color, Mouse, BoxOverlays')
-		this.x = Crafty.viewport.x
-		this.y = Crafty.viewport.height - 100;
+		this.requires('2D, DOM, Color, Touch, BoxOverlays')
 		this.h = 100;
 		this.w = 100;
+		this.bind('TouchStart1', function(e){
+			console.log(e)
+			this.x = e.clientX - (this.w/2);
+			this.y = e.clientY - (this.h/2);
+		})
+		this.bind('TouchEnd1', function(e){
+			this.x = null;
+			this.y = null;
+		})
 		this.areaMap(
 			[this._x, this._y], //top left
 			[this._w, this._y], //top right
@@ -24,7 +33,7 @@ Crafty.c('JoystickBase', {
 
 Crafty.c('Joystick', {
 	init: function () {
-		this.requires('2D, DOM, Color, Mouse, BoxOverlays');
+		this.requires('2D, DOM, Color, Touch, BoxOverlays');
 		this.color('red');
 		this.h = 50;
 		this.w = 50;
@@ -69,6 +78,6 @@ Crafty.c('Joystick', {
 			// 	this._visible = false;
 			// }
 		})
-		
+
 	}
 })

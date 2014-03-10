@@ -34,20 +34,21 @@ Crafty.c('Arm', {
 				this.y = player._armLocation.y;
 			}*/
 		});
-		this.bind('MouseDown', function(e) {
+		this.bind('TouchStart2', function(e) {
+			console.log(e)
 			Game.mouseButton = true;
 			if (this._visible === false) {
 				this._visible = true;
 			}
 		});
-		this.bind('MouseUp', function() {
+		this.bind('TouchEnd2', function() {
 			Game.mouseButton = false;
 			// this.rotation = 0;
 			if (this._visible) {
 				this._visible = false;
 			}
 		});
-		this.bind('MouseMoved', function(e) {
+		this.bind('TouchMove2', function(e) {
 			this.rotateArm(player, e);
 		});
 		this.onHit('Actor', function(data) {
