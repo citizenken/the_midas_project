@@ -37,13 +37,13 @@ var Game = {
 		// Crafty.init(Game.width(), Game.height());
 		Crafty.init(500, 500);
 		// console.log(Crafty.mobile)
-		// Crafty.background('gray');
+		Crafty.background('gray');
 		Game.worldMap = createWorldMap();
 		// Crafty.settings.modify('autoPause', true)
 		Game.playerKeys = {};
 		Game.playerKeysHolding = {};
 		Game.playerKeys.M = false;
-		Crafty.scene('mouseTest');
+		Crafty.scene('Loading');
 	}
 };
 

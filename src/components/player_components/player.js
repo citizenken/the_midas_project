@@ -27,7 +27,7 @@ Crafty.c('Player', {
 	_tradeItems: [],
 	_loadPoly: null,
 	init: function() {
-		this.requires('Actor, Twoway, Collision, Delay, Persist, Solid, Gravity, SpriteAnimation, spr_human, WiredHitBox');
+		this.requires('Actor, Twoway, Collision, Delay, Persist, Solid, Gravity, SpriteAnimation, spr_human');
 			this.h = Game.map_grid.tile.height * 2;
 			this.w = Game.map_grid.tile.width * 2;
 			this.addArms();

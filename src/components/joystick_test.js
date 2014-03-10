@@ -82,11 +82,12 @@ Crafty.c('Joystick', {
 		this.h = 50;
 		this.w = 50;
 		this.bind('Dragging', function(e) {
+			//console.log('on ent', e);
             var centerX = this._center.x = this.x + (this.w/2);
             var centerY = this._center.y = this.y + (this.h/2);
 			var parent = this._parent;
 
-			console.log(this._parent._uL.isAt(centerX,centerY));
+			// console.log(this._parent._uL.isAt(centerX,centerY));
 			// console.log(this._parent._uL.containsPoint(centerX, centerY));
 
             if (Crafty.math.distance(centerX, centerY, parent._center.x, parent._center.y) >= this._maxDistance) {
